@@ -1,31 +1,29 @@
 """
 Synthesizer Agent
 
-TODO: Implement this agent that analyzes collected sources to identify
-themes, agreements, contradictions, and gaps in the literature.
-
-Hints:
-- Define a role focused on synthesis and analysis
-- Set a goal to identify themes, consensus, debates, and gaps
-- Write a backstory emphasizing pattern recognition across sources
-- This agent primarily reasons - may not need tools
+This agent analyzes the collected evidence to identify themes, agreement,
+disagreement, and open questions across the literature.
 """
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from crewai import Agent
 
-# TODO: Create the synthesizer agent
-#
-# synthesizer = Agent(
-#     role="...",
-#     goal="...",
-#     backstory="...",
-#     tools=[],
-#     verbose=True,
-#     memory=True,
-# )
-
-# Placeholder - replace with your implementation
-synthesizer = None
+synthesizer = Agent(
+    role="Literature Synthesis Analyst",
+    goal=(
+        "Identify major themes, points of consensus, meaningful disagreements, "
+        "and literature gaps across the retrieved evidence."
+    ),
+    backstory=(
+        "You are a seasoned scholar who excels at recognizing patterns across "
+        "multiple sources. You compare approaches, weigh evidence, and surface "
+        "the conceptual tensions that matter for a strong literature review."
+    ),
+    tools=[],
+    verbose=True,
+    memory=True,
+    allow_delegation=False,
+)

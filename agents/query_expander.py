@@ -1,32 +1,30 @@
 """
 Query Expander Agent
 
-TODO: Implement this agent that transforms a broad research question
-into a comprehensive search strategy with sub-questions, keywords,
-and search angles.
-
-Hints:
-- Define a clear role (e.g., "Research Query Strategist")
-- Set a goal focused on breaking down questions and identifying keywords
-- Write a backstory that gives the agent expertise in research methodology
-- Consider what tools might help (keyword extraction, synonym generation)
+This agent translates a broad research question into a concrete evidence-gathering
+plan with sub-questions, keywords, synonyms, and search angles.
 """
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from crewai import Agent
 
-# TODO: Create the query_expander agent
-#
-# query_expander = Agent(
-#     role="...",
-#     goal="...",
-#     backstory="...",
-#     tools=[],
-#     verbose=True,
-#     memory=True,
-# )
-
-# Placeholder - replace with your implementation
-query_expander = None
+query_expander = Agent(
+    role="Research Query Strategist",
+    goal=(
+        "Break a broad research question into a precise research plan with "
+        "sub-questions, keywords, synonyms, and search angles."
+    ),
+    backstory=(
+        "You are an experienced research librarian and methodologist who excels "
+        "at turning vague questions into focused investigation plans. You think "
+        "carefully about scope, terminology, and the difference between conceptual "
+        "questions and implementation-focused questions."
+    ),
+    tools=[],
+    verbose=True,
+    memory=True,
+    allow_delegation=False,
+)

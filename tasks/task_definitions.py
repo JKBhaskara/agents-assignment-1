@@ -1,91 +1,78 @@
 """
 Task Definitions for Research Crew
 
-TODO: Define the four sequential tasks:
-1. Query Expansion - Break down the research question
-2. Source Hunting - Search the paper corpus
-3. Synthesis - Analyze and synthesize findings
-4. Report Writing - Generate the literature review
-
-Each task should:
-- Have a clear description telling the agent what to do
-- Specify the agent responsible
-- Define expected_output format
-- Use context parameter to pass information between tasks
+The workflow is a sequential pipeline that first derives a research strategy,
+then gathers evidence, synthesizes themes, and writes the final report.
 """
 
 from crewai import Task
-from agents import query_expander, source_hunter, synthesizer, report_writer
+
+from agents import query_expander, report_writer, source_hunter, synthesizer
 
 
 def create_research_tasks(research_question: str) -> list[Task]:
-    """
-    Create the task pipeline for a research question.
+    """Create the four sequential tasks for the research workflow."""
 
-    Args:
-        research_question: The user's research question
-
-    Returns:
-        List of 4 tasks in execution order
-
-    TODO: Implement the four tasks below
-    """
-
-    # =========================================
-    # Task 1: Query Expansion
-    # =========================================
-    # TODO: Create a task that breaks down the research question
-    # into sub-questions, keywords, and search angles
-    #
-    # expand_task = Task(
-    #     description=f"... {research_question} ...",
-    #     agent=query_expander,
-    #     expected_output="..."
-    # )
-
-    # =========================================
-    # Task 2: Source Hunting
-    # =========================================
-    # TODO: Create a task that searches the paper corpus
-    # Hint: Use context=[expand_task] to pass the query strategy
-    #
-    # search_task = Task(
-    #     description="...",
-    #     agent=source_hunter,
-    #     context=[expand_task],
-    #     expected_output="..."
-    # )
-
-    # =========================================
-    # Task 3: Synthesis
-    # =========================================
-    # TODO: Create a task that synthesizes findings into themes
-    # Hint: Use context=[expand_task, search_task] for full context
-    #
-    # synthesis_task = Task(
-    #     description="...",
-    #     agent=synthesizer,
-    #     context=[expand_task, search_task],
-    #     expected_output="..."
-    # )
-
-    # =========================================
-    # Task 4: Report Writing
-    # =========================================
-    # TODO: Create a task that writes the final literature review
-    # Hint: Use context=[expand_task, search_task, synthesis_task]
-    #
-    # report_task = Task(
-    #     description="...",
-    #     agent=report_writer,
-    #     context=[expand_task, search_task, synthesis_task],
-    #     expected_output="..."
-    # )
-
-    # TODO: Return your tasks in order
-    # return [expand_task, search_task, synthesis_task, report_task]
-
-    # Placeholder - replace with your implementation
-    raise NotImplementedError(
-        "TODO: Implement create_research_tasks() in tasks/task_definitions.py"
+    expand_task = Task(
+        description=(
+            f"Break the research question into a concrete research strategy. "
+            f"For the question: {research_question}, identify the core concepts, "
+            "sub-questions, important keywords, synonym variants, and useful "
+            "search angles. Show a short ReAct-style reasoning trace with Thought, "
+            "Action, Observation, and a proposed plan before listing the final strategy."
+        ),
+        agent=query_expander,
+        expected_output=(
+            "A structured research plan with: (1) a short ReAct-style reasoning trace, "
+            "(2) 3-5 sub-questions, (3) 8-12 keywords or phrases, and (4) 3-4 search angles."
+        ),
     )
+
+    search_task = Task(
+        description=(
+            "Use the research plan from the previous step to retrieve evidence from "
+            "the paper corpus. Search for passages that answer each sub-question, "
+            "prioritize specific and defensible evidence, and include a short reasoning "
+            "trace describing what you looked for and why."
+        ),
+        agent=source_hunter,
+        context=[expand_task],
+        expected_output=(
+            "A curated set of 8-12 relevant passages with paper/source details, "
+            "section labels, relevance notes, and a brief explanation of why each "
+            "passage was selected."
+        ),
+    )
+
+    synthesis_task = Task(
+        description=(
+            "Analyze the retrieved passages for repeated themes, agreements, tensions, "
+            "and gaps. Produce a synthesis that explains what the literature says, "
+            "where it disagrees, and what remains unresolved. Include a concise "
+            "ReAct-style reasoning summary before the final synthesis."
+        ),
+        agent=synthesizer,
+        context=[expand_task, search_task],
+        expected_output=(
+            "A synthesis document that summarizes the main themes, highlights consensus "
+            "and disagreements, identifies open questions, and notes evidence-backed gaps."
+        ),
+    )
+
+    report_task = Task(
+        description=(
+            "Write the final literature review as a polished markdown document. "
+            "Use the planning notes, retrieved evidence, and synthesis to produce "
+            "sections for Executive Summary, Introduction, Methodology, Findings, "
+            "Discussion, Conclusion, and References. Ground every major claim in the "
+            "paper corpus and include a short reasoning note before the final report."
+        ),
+        agent=report_writer,
+        context=[expand_task, search_task, synthesis_task],
+        expected_output=(
+            "A complete markdown literature review with the required sections, clear "
+            "organization, and source-based citations."
+        ),
+    )
+
+    return [expand_task, search_task, synthesis_task, report_task]
